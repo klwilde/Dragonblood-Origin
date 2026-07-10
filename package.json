@@ -2,12 +2,7 @@
   "name": "dragonblood-origin",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "vite": "latest"
-  }
+  "scripts": {"dev":"vinext dev","build":"vinext build","start":"vinext start"},
+  "dependencies": {"react":"latest","react-dom":"latest"},
+  "devDependencies": {"vinext":"latest","vite":"latest"}
 }
