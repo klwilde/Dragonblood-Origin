@@ -18,11 +18,11 @@ function createMockClient() {
       drafts.push(entry);
       return entry;
     },
-    async publish(draftId, { tier } = {}) {
+    async publish(draftId, overrides = {}) {
       const index = drafts.findIndex((d) => d.id === draftId);
       if (index === -1) throw new Error(`No such draft: ${draftId}`);
       const [entry] = drafts.splice(index, 1);
-      const post = { ...entry, tier: tier ?? entry.tier, publishedAt: new Date() };
+      const post = { ...entry, ...overrides, publishedAt: new Date() };
       published.push(post);
       return post;
     },

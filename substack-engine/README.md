@@ -49,9 +49,41 @@ tests. Substack has no stable public publishing API, so a real adapter
 implement the same two methods and be passed in wherever `createMockClient` is
 used today.
 
+## Daily confirmation pipeline
+
+`daily/confirmDaily.js` implements the Daily tier's cadence: pull the next
+corpus fragment, draft it, and require a human decision before anything
+publishes.
+
+- `lib/corpusSource.js` — pluggable source of raw fragments (mock sample set
+  tagged with the Daily narrative forms; swap in a real notes/journal reader
+  by implementing the same `nextFragment(index)` shape).
+- `lib/draftQueue.js` — tracks the corpus cursor and recycles skipped drafts
+  (re-queued, not lost) up to `DEFAULT_MAX_SKIPS` attempts before retiring
+  them; state persists to `data/recycle-queue.json`.
+- `lib/analyticsLog.js` — append-only JSONL log of every cycle's outcome
+  (published / skipped-recycled / retired) at `data/analytics.log.jsonl`.
+
+Run it interactively — it drafts a post and prompts `[p]ublish / [s]kip /
+[e]dit then publish / [q]uit`:
+
+```sh
+npm run substack:daily
+```
+
+Or drive it non-interactively (used by tests and automation):
+
+```sh
+node substack-engine/daily/confirmDaily.js --auto=publish
+node substack-engine/daily/confirmDaily.js --auto=skip
+```
+
+`data/` is git-ignored — it's per-environment runtime state, not source.
+
 ## Running
 
 ```sh
 npm run substack:demo   # print current routing + upcoming schedule
-npm run substack:test   # run the module's test suite
+npm run substack:test   # run the full test suite (router + daily pipeline)
+npm run substack:daily  # run today's confirmation cycle interactively
 ```
