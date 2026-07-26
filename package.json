@@ -2,7 +2,7 @@
   "name": "dragonblood-origin",
   "version": "0.1.0",
   "private": true,
-  "scripts": {"dev":"vinext dev","build":"vinext build","start":"vinext start"},
+  "scripts": {"dev":"vinext dev","build":"vinext build","start":"vinext start","substack:demo":"node substack-engine/demo.js","substack:test":"node substack-engine/test.js"},
   "dependencies": {"react":"latest","react-dom":"latest"},
   "devDependencies": {"@vitejs/plugin-rsc":"latest","vinext":"latest","vite":"latest"}
 }
