@@ -80,10 +80,37 @@ node substack-engine/daily/confirmDaily.js --auto=skip
 
 `data/` is git-ignored — it's per-environment runtime state, not source.
 
+## Lunar cycle pipeline
+
+`lunar/confirmLunar.js` implements the Lunar tier's two sub-cadences: New
+Moon (origin question) and Full Moon (synthesis + investigation), gated to
+the followers tier. It auto-detects whichever phase is next via
+`lib/moonPhase.js#nextPhase`, or a phase can be forced for manual runs.
+
+- `lunar/lunarTemplates.js` — the New Moon / Full Moon prompt banks, tagged
+  with the `mythic-mechanics` narrative forms (tides, crossings, thresholds,
+  shadow-maps, seasonal currents).
+- Each phase keeps its own recycle queue (`lib/draftQueue.js`, reused from
+  the Daily pipeline) so a skipped New Moon prompt doesn't crowd out Full
+  Moon prompts or vice versa.
+- `lib/insightsLedger.js` — every published Lunar post is recorded here
+  (`data/lunar-insights.json`), so the Solstice/Equinox tier can pull this
+  cycle's mythic-mechanics material into its seasonal narrative cartography
+  instead of starting from scratch each quarter.
+- Human-in-the-loop decision prompting (`lib/decisionProviders.js`) is
+  shared with the Daily pipeline.
+
+```sh
+npm run substack:lunar                      # auto-detect phase, interactive
+node substack-engine/lunar/confirmLunar.js --phase=newMoon --auto=publish
+node substack-engine/lunar/confirmLunar.js --phase=fullMoon --auto=skip
+```
+
 ## Running
 
 ```sh
 npm run substack:demo   # print current routing + upcoming schedule
-npm run substack:test   # run the full test suite (router + daily pipeline)
-npm run substack:daily  # run today's confirmation cycle interactively
+npm run substack:test   # run the full test suite (router + daily + lunar pipelines)
+npm run substack:daily  # run today's daily confirmation cycle interactively
+npm run substack:lunar  # run today's lunar cycle (auto-detected phase) interactively
 ```

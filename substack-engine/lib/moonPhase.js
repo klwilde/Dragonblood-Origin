@@ -25,4 +25,12 @@ function nextFullMoon(fromDate = new Date()) {
   return jdToDate(dateToJD(fromDate) + daysUntil);
 }
 
-module.exports = { ageInDays, nextNewMoon, nextFullMoon, SYNODIC_MONTH };
+// Whichever of New Moon / Full Moon falls next, for pipelines that need to
+// pick a single sub-cadence to draft for.
+function nextPhase(fromDate = new Date()) {
+  const newMoon = nextNewMoon(fromDate);
+  const fullMoon = nextFullMoon(fromDate);
+  return newMoon <= fullMoon ? { phase: 'newMoon', date: newMoon } : { phase: 'fullMoon', date: fullMoon };
+}
+
+module.exports = { ageInDays, nextNewMoon, nextFullMoon, nextPhase, SYNODIC_MONTH };

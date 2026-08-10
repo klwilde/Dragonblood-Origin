@@ -13,6 +13,7 @@ const { createCorpusSource } = require('../lib/corpusSource');
 const { createMockClient } = require('../lib/substackClient');
 const draftQueue = require('../lib/draftQueue');
 const analyticsLog = require('../lib/analyticsLog');
+const { interactiveDecisionProvider, autoDecisionProvider } = require('../lib/decisionProviders');
 
 function renderDraft(fragment, route) {
   const date = new Date().toISOString().slice(0, 10);
@@ -67,31 +68,6 @@ async function runDailyCycle({
   }
 
   throw new Error(`Unknown decision action: ${decision.action}`);
-}
-
-async function interactiveDecisionProvider(draftEntry) {
-  const readline = require('node:readline/promises');
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-  try {
-    console.log(`\n--- ${draftEntry.title} ---\n${draftEntry.body}\n`);
-    const answer = (await rl.question('[p]ublish / [s]kip / [e]dit then publish / [q]uit? ')).trim().toLowerCase();
-    if (answer === 'q') {
-      console.log('Quit without recording a decision.');
-      process.exit(0);
-    }
-    if (answer === 'e') {
-      const body = await rl.question('New body text:\n');
-      return { action: 'edit', body };
-    }
-    if (answer === 's') return { action: 'skip' };
-    return { action: 'publish' };
-  } finally {
-    rl.close();
-  }
-}
-
-function autoDecisionProvider(action) {
-  return async () => ({ action });
 }
 
 if (require.main === module) {
